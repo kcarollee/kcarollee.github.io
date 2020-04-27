@@ -1,1 +1,160 @@
-Testing
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>hello vue.js</title>
+    <script src="https://unpkg.com/vue@2.5.16/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.0.0/lib/p5.js"></script>
+</head>
+
+<body>
+    <div id="simple" style="z-index: 0;">
+        <h2 v-html="message"></h2>
+        <input type="text" v-model:value="text" placeholder="Enter Text">
+    </div>
+    <script type="text/javascript" style="z-index: 1;">
+        // model object - data
+        var model = {
+            message: 'the message is written within the model object.',
+            text: ''
+        };
+        // vue, ViewModel object - status and computations
+        var simple = new Vue({
+            el: '#simple', // html element
+            data: model // model object to refer to
+        });
+        /*
+                var sLen;
+                var angleDiv;
+                var radius;
+                var wordsPerHalfPeri;
+                var initDiam;
+                var centerOdd, centerEven;
+                var loopNum;
+                var odd;
+
+                function setup() {
+                    createCanvas(600, 600);
+                    angleDiv = 2 * Math.PI / 10;
+                    radius = 50;
+                    initDiam = 20;
+                    centerOdd = createVector(0, 0);
+                    centerEven = createVector(-0.25 * initDiam, 0);
+                    odd = true;
+                    loopNum = 1;
+                }
+
+                function draw() {
+                    background(200);
+                    textSize(15);
+                    wordsPerHalfPeri = 10;
+                    angleDiv = Math.PI / wordsPerHalfPeri;
+                    radius = 50;
+                    sLen = simple.text.length;
+                    translate(width / 2, height / 2);
+
+                    for (let i = 0; i < sLen; i++) {
+                        if (i % wordsPerHalfPeri == 0 && i != 0) {
+                            odd = !odd;
+                            angleDiv *= 0.5;
+                            loop++;
+                        }
+                        if (odd) {
+                            text(simple.text.charAt(i),
+                                centerOdd.x + initDiam * 0.5 * loopNum * Math.cos(i * angleDiv),
+                                centerOdd.y + initDiam * 0.5 * loopNum * Math.sin(i * angleDiv));
+                        } else {
+                            text(simple.text.charAt(i),
+                                centerEven.x + initDiam * 0.5 * loopNum * Math.cos(i * angleDiv),
+                                centerEven.y + initDiam * 0.5 * loopNum * Math.sin(i * angleDiv));
+                        }
+                    }
+
+                }
+                */
+        var vectorArr = [];
+        var pos;
+        var left = new p5.Vector(-1, 0);
+        var right = new p5.Vector(1, 0);
+        var up = new p5.Vector(0, 1);
+        var down = new p5.Vector(0, -1);
+        var vel = 5;
+        var walk;
+        var walkerArr = [];
+        var walkerArrNum;
+        var loopNum = 0;
+        class Walker {
+            constructor(size, initPos) {
+                this.size = size;
+                this.initPos = new p5.Vector(initPos.x, initPos.y);
+                this.positionArr = [];
+                this.positionArr.push(this.initPos);
+                this.color = color(random(0, 255), random(0, 255), random(0, 255));
+                for (let i = 0; i < this.size - 1; i++) {
+                    this.addRandomPos();
+                }
+
+            }
+            addRandomPos() {
+                var rand = floor(random(0, 4));
+                switch (rand) {
+                    case 0:
+                        this.initPos.x += vel * left.x;
+                        this.initPos.y += vel * left.y;
+                        break;
+                    case 1:
+                        this.initPos.x += vel * right.x;
+                        this.initPos.y += vel * right.y;
+                        break;
+                    case 2:
+                        this.initPos.x += vel * up.x;
+                        this.initPos.y += vel * up.y;
+                        break;
+                    case 3:
+                        this.initPos.x += vel * down.x;
+                        this.initPos.y += vel * down.y;
+                        break;
+                }
+                this.initPos.x %= width;
+                this.initPos.y %= height;
+                var newPos = new p5.Vector(this.initPos.x, this.initPos.y);
+                this.positionArr.push(newPos);
+            }
+            update() {
+                this.addRandomPos();
+                this.positionArr.shift();
+            }
+            display() {
+                for (let i = 0; i < this.positionArr.length; i++) {
+                    noStroke();
+                    fill(this.color);
+                    ellipse(this.positionArr[i].x, this.positionArr[i].y, 1, 1);
+                }
+            }
+        }
+
+        function setup() {
+            createCanvas(600, 600);
+            walkerArrNum = 200;
+            for (let i = 0; i < walkerArrNum; i++) {
+                var init = new p5.Vector(width / 2, height / 2);
+                var walker = new Walker(25, init);
+                walkerArr.push(walker);
+            }
+        }
+
+        function draw() {
+            background(0);
+            for (let i = 0; i < walkerArr.length; i++) {
+                walkerArr[i].update();
+                walkerArr[i].display();
+            }
+
+        }
+    </script>
+
+
+</body>
+
+</html>
