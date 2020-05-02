@@ -60,7 +60,8 @@ class Walker {
 }
 
 function setup() {
-    createCanvas(windowWidth, 150);
+    var cnv = createCanvas(windowWidth, 150);
+    cnv.position(0, 0);
     walkerArrNum = 100;
     for (let i = 0; i < walkerArrNum; i++) {
         var init = new p5.Vector(floor(random(0, width)), floor(random(0, height)));

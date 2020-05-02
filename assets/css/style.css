@@ -1,8 +1,22 @@
-html,
-body {
-    height: 100%;
+.container {
+    margin: 0 auto;
+    background-color: black;
+    z-index: 1;
 }
 
 body {
     margin: 0;
+}
+
+body nav {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+body nav a {
+    position: relative;
+    color: white;
+    top: 150px;
+    font-size: 20px;
 }
