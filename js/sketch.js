@@ -1,95 +1,6 @@
-var fixedMouse = (mx, my) => [mx - width / 2.0, my - height / 2.0];
-class DomElements {
-    constructor(vidSrc) {
-        this.src = vidSrc;
-        this.iFrame = createElement('iframe');
-        this.iFrame.attribute('src', vidSrc);
-        this.iFrame.attribute('width', '600px');
-        this.iFrame.attribute('height', '600px');
-        this.iFrame.attribute('frameBorder', '0');
-        this.iFrame.attribute('scrolling', 'no');
-        this.iFrame.attribute('overflow', 'hidden');
-        this.iFrame.style('overflow', 'hidden');
-        //this.iFrame.attribute('style', 'position:relative');
-        this.iFrame.position(windowWidth * 0.5 - 300, windowHeight * 0.5 - 300);
-
-    }
-
-    changePos(newX, newY) {
-        this.iFrame.position(newX, newY);
-    }
-}
-
-class Thumbnail {
-    constructor() {
-        this.atFront = false;
-
-    }
-
-    setTexture(newTex) { this.imgTexture = newTex; }
-    setDomElements(dom) { this.domeElements = dom; }
-    mouseInBounds() {
-        if (this.atFront) {
-            let mouse = fixedMouse(mouseX, mouseY);
-            let w = windowWidth * 0.5;
-            let h = windowHeight * 0.5;
-            if (-w * 0.5 < mouse[0] && mouse[0] < w * 0.5 &&
-                -h * 0.5 < mouse[1] && mouse[1] < h * 0.5) {
-                console.log("IN");
-                cursor(CROSS);
-                return true;
-            }
-        }
-    }
-    display() {
-        /*
-        push();
-        rotateY(QUARTER_PI * i);
-        //translate y:  floor(20 * i * PI + frameCount * 10) % windowHeight - windowHeight * 0.5
-        translate(0, 0, -windowHeight / 2);
-        texture(img);
-        plane(windowHeight / 4, windowHeight / 4);
-        pop();
-        */
-        texture(this.imgTexture);
-        plane(windowHeight * 0.5, windowHeight * 0.5);
-    }
-}
+var fixedMouse = (mx, my) => [mx - windowWidth / 2.0, my - windowHeight / 2.0];
 
 
-class NavBar {
-    constructor(width, height, pos) {
-        this.width = width;
-        this.height = height;
-        this.pos = pos;
-        this.color = color(255);
-        //this.text;
-    }
-
-    setText(text) { this.text = text; }
-    setSize(width, height) {
-        this.width = width;
-        this.height = height;
-    }
-    setPosition(newPos) { this.pos = newPos; }
-    display() {
-        noStroke();
-        fill(this.color);
-        rectMode(CENTER);
-        rect(this.pos.x, this.pos.y, this.width, this.height);
-
-        fill(0);
-        text(this.text, -this.width * 0.5, this.pos.y + this.height * 0.25);
-    }
-
-    mouseOver() {
-        let mouse = fixedMouse(mouseX, mouseY);
-        if (-this.width * 0.5 + this.pos.x < mouse[0] && mouse[0] < this.width * 0.5 + this.pos.x &&
-            -this.height * 0.5 + this.pos.y < mouse[1] && mouse[1] < this.height * 0.5 + this.pos.y) {
-            this.color = color(150);
-        } else this.color = color(255);
-    }
-}
 
 var thumbTexArr = [];
 var ThumbnailArr = [];
@@ -121,7 +32,7 @@ function setup() {
 
     // load images into texture array
     for (let i = 0; i < 8; i++) {
-        var img = loadImage('imgs/thumb' + (i % 2 + 1) + '.png');
+        var img = loadImage('imgs/thumb' + i + '.png');
         thumbTexArr.push(img);
     }
 
@@ -143,15 +54,28 @@ function draw() {
     push();
     let radius = 800;
     translate(0, 0, -radius * cos(PI / 8.0));
+    //console.log(rotateNum);
     for (let i = 0; i < 8; i++) {
-        if (i == rotateNum) ThumbnailArr[i].atFront = true;
-        else ThumbnailArr[i].atFront = false;
+        if (rotateNum > 0) {
+            if (i == (8 - rotateNum % 8) % 8) ThumbnailArr[i].atFront = true;
+            else ThumbnailArr[i].atFront = false;
+        } else {
+            if (i == (8 - (8 - abs(rotateNum) % 8) % 8) % 8) ThumbnailArr[i].atFront = true;
+            else ThumbnailArr[i].atFront = false;
+        }
         push();
         rotateY(QUARTER_PI * (i + rotateNum) + PI);
         //translate y:  floor(20 * i * PI + frameCount * 10) % windowHeight - windowHeight * 0.5
         translate(0, 0, -radius);
+        push();
+        rotateY(PI);
         ThumbnailArr[i].display();
         ThumbnailArr[i].mouseInBounds();
+        fill(255);
+        text("index:" + i, 0, 200);
+        text("rotateNum:" + rotateNum, 0, 225);
+        if (ThumbnailArr[i].atFront) text("front", 0, 250);
+        pop();
         pop();
     }
     pop();
@@ -162,7 +86,9 @@ function draw() {
     AboutBar.display();
     SketchBar.mouseOver();
     AboutBar.mouseOver();
-
+    AboutBar.setPosition(new p5.Vector(0, -windowHeight / 2 * 8 / 10, 0));
+    fill(255);
+    text("Press 'v' to view sketch.", -windowWidth / 2.0, -windowHeight / 2 * 7 / 10);
     // thumbnail rotation
     manageRotation();
 
@@ -174,7 +100,7 @@ function windowResized() {
     SketchBar.setPosition(new p5.Vector(0, -windowHeight / 2 * 9 / 10, 0));
     AboutBar.setSize(windowWidth, 25);
     AboutBar.setPosition(new p5.Vector(0, -windowHeight / 2 * 8 / 10, 0));
-    //testi.changePos(windowWidth * 0.5 - 300, windowHeight * 0.5 - 300);
+    testi.changePos(windowWidth * 0.5 - 300, windowHeight * 0.5 - 300);
 }
 
 var turnLeft;
@@ -186,6 +112,7 @@ function keyPressed() {
         case LEFT_ARROW:
             if (!turnLeft) {
                 turnLeft = true;
+                turnRight = false;
                 dest = rotateNum + 1;
             }
             //rotateNum--;
@@ -193,30 +120,52 @@ function keyPressed() {
         case RIGHT_ARROW:
             if (!turnRight) {
                 turnRight = true;
+                turnLeft = false;
                 dest = rotateNum - 1;
             }
             //rotateNum++;
             break;
     }
+    switch (key) {
+        case 'v':
+            console.log("V");
+            testi = new DomElements('https://youtu.be/9Bwx4Azjc_E',
+                'https://github.com/kcarollee/kcarollee.github.io');
+            break;
+    }
 }
 
 function manageRotation() {
-
     if (turnLeft) {
-
         if (rotateNum - dest < 0.01) rotateNum += 0.03;
         else {
             rotateNum = dest;
             turnLeft = false;
         }
-
-
     } else if (turnRight) {
-
         if (dest - rotateNum < 0.01) rotateNum -= 0.03;
         else {
             rotateNum = dest;
             turnRight = false;
         }
     }
+}
+
+function mouseClicked() {
+    for (let i = 0; i < 8; i++) {
+        //console.log(i);
+        if (ThumbnailArr[i].mouseInBounds()) {
+            //console.log("HELLO WHAT");
+            testi = new DomElements('https://neort.io/embed/bptmfo43p9fefb92540g?autoStart=true&quality=1&info=true',
+                'https://github.com/kcarollee/kcarollee.github.io');
+            console.log("COMEONE");
+        } else testi.remove();
+    }
+    /*
+    if (ThumbnailArr[0].mouseInBounds()) {
+        console.log("HELLO");
+        testi = new DomElements('https://neort.io/embed/bptmfo43p9fefb92540g?autoStart=true&quality=1&info=true',
+            'https://github.com/kcarollee/kcarollee.github.io');
+    } else testi.remove();
+    */
 }
