@@ -1,7 +1,4 @@
 var fixedMouse = (mx, my) => [mx - windowWidth / 2.0, my - windowHeight / 2.0];
-
-
-
 var thumbTexArr = [];
 var ThumbnailArr = [];
 var SketchBar;
@@ -14,15 +11,25 @@ let pg;
 let domElem;
 let currentFrontIndex = 0;
 p5.disableFriendlyErrors = true;
+let BackgroundShader;
+let ShaderTexture;
+let gl;
 
 function preload() {
     generalFont = loadFont('fonts/Monoid-Regular.ttf');
+    BackgroundShader = loadShader('shaders/BackgroundShader.vert', 'shaders/BackgroundShader.frag');
 }
 
 function setup() {
+    // canv init
     var canv = createCanvas(windowWidth, windowHeight, WEBGL);
     canv.position(0, 0);
     canv.style('z-index', '-1');
+
+    // shader init
+    ShaderTexture = createGraphics(windowWidth, windowHeight, WEBGL);
+    ShaderTexture.noStroke();
+
     textFont(generalFont);
     textSize(15);
     SketchBar = new NavBar(width, 25, new p5.Vector(0, -height / 2 * 9 / 10, 0));
@@ -46,14 +53,27 @@ function setup() {
 
     // init dom elements w/o actually creating them -> dom creation is initiated upon pressing 'v'
     domElem = new DomElements();
-    //domElem = new DomElements('https://neort.io/embed/bptmfo43p9fefb92540g?autoStart=true&quality=1&info=true');
 
+    // for enabling / disabling depth test
+    gl = this._renderer.GL;
+    gl.disable(gl.DEPTH_TEST);
 }
 
 function draw() {
+    //shaders
+    ShaderTexture.shader(BackgroundShader);
+    BackgroundShader.setUniform("resolution", [width, height]);
+    BackgroundShader.setUniform("time", millis() / 1000.0);
+    ShaderTexture.rect(0, 0, width, height);
+
     background(0);
+    // background texture
+    gl.disable(gl.DEPTH_TEST);
+    texture(ShaderTexture);
+    rect(0, 0, width, height);
+
     // Thumbnails
-    //fill(255);
+    gl.enable(gl.DEPTH_TEST);
     push();
     let radius = 800;
     translate(0, 0, -radius * cos(PI / 8.0));
