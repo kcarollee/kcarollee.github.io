@@ -13,6 +13,7 @@ let generalFont;
 let pg;
 let domElem;
 let currentFrontIndex = 0;
+p5.disableFriendlyErrors = true;
 
 function preload() {
     generalFont = loadFont('fonts/Monoid-Regular.ttf');
@@ -116,21 +117,27 @@ var dest;
 function keyPressed() {
     switch (keyCode) {
         case LEFT_ARROW:
+            // keyboard disabled when dom elements are visible
             if (!domElem.domCreated) {
-                if (!turnLeft) {
-                    turnLeft = true;
-                    turnRight = false;
-                    dest = rotateNum + 1;
+                // nested if loop to prevent turning while rotating 
+                if (!turnRight) {
+                    if (!turnLeft) {
+                        turnLeft = true;
+                        turnRight = false;
+                        dest = rotateNum + 1;
+                    }
                 }
                 //rotateNum--;
             }
             break;
         case RIGHT_ARROW:
             if (!domElem.domCreated) {
-                if (!turnRight) {
-                    turnRight = true;
-                    turnLeft = false;
-                    dest = rotateNum - 1;
+                if (!turnLeft) {
+                    if (!turnRight) {
+                        turnRight = true;
+                        turnLeft = false;
+                        dest = rotateNum - 1;
+                    }
                 }
             }
             //rotateNum++;
@@ -151,19 +158,35 @@ function keyPressed() {
 
 function manageRotation() {
     if (turnLeft) {
-        if (rotateNum - dest < 0.01) rotateNum += 0.03;
-        else {
+        if (rotateNum - dest < 0.01) {
+            //rotateNum += 0.03;
+            manageRotation.loopNum++;
+            rotateNum += 0.00001 * manageRotation.loopNum * (200 - manageRotation.loopNum);
+        } else {
+            //manageRotation.loopNum--;
+            //rotateNum -= 0.00001 * manageRotation.loopNum * (200 - manageRotation.loopNum);
+            manageRotation.rot = 0;
+            manageRotation.loopNum = 0;
             rotateNum = dest;
             turnLeft = false;
         }
     } else if (turnRight) {
-        if (dest - rotateNum < 0.01) rotateNum -= 0.03;
-        else {
+        if (dest - rotateNum < 0.01) {
+            //rotateNum -= 0.03;
+            manageRotation.loopNum++;
+            rotateNum -= 0.00001 * manageRotation.loopNum * (200 - manageRotation.loopNum);
+        } else {
+            //manageRotation.loopNum--;
+            //rotateNum += 0.00001 * manageRotation.loopNum * (200 - manageRotation.loopNum);
+            manageRotation.rot = 0;
+            manageRotation.loopNum = 0;
             rotateNum = dest;
             turnRight = false;
         }
     }
 }
+manageRotation.loopNum = 0;
+console.log(manageRotation.rot);
 
 function mouseClicked() {
     /*

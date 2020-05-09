@@ -28,7 +28,6 @@ class Thumbnail {
             fill(255);
             textAlign(CENTER, CENTER);
             text(this.text, 0, floor(windowHeight * 0.3));
-            console.log(floor(windowHeight * 0.3));
         }
         texture(this.imgTexture);
         plane(windowHeight * 0.5, windowHeight * 0.5);
