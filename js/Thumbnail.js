@@ -5,7 +5,7 @@ class Thumbnail {
     }
 
     setTexture(newTex) { this.imgTexture = newTex; }
-    setDomElements(dom) { this.domeElements = dom; }
+    setTitle(text) { this.text = text; }
     mouseInBounds() {
         if (this.atFront) {
             let mouse = fixedMouse(mouseX, mouseY);
@@ -14,14 +14,22 @@ class Thumbnail {
             if (-w * 0.5 < mouse[0] && mouse[0] < w * 0.5 &&
                 -h * 0.5 < mouse[1] && mouse[1] < h * 0.5) {
                 //this.imgTexture = loadImage('imgs/thumb2.png');
-                console.log("IN BOUNDS");
+                //console.log("IN BOUNDS");
                 return true;
             }
             return false;
         }
         return false;
     }
+
+
     display() {
+        if (this.atFront) {
+            fill(255);
+            textAlign(CENTER, CENTER);
+            text(this.text, 0, floor(windowHeight * 0.3));
+            console.log(floor(windowHeight * 0.3));
+        }
         texture(this.imgTexture);
         plane(windowHeight * 0.5, windowHeight * 0.5);
     }

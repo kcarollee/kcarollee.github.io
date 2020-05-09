@@ -11,12 +11,11 @@ var rotateNum = 0;
 let img;
 let generalFont;
 let pg;
-let testi;
-
+let domElem;
+let currentFrontIndex = 0;
 
 function preload() {
     generalFont = loadFont('fonts/Monoid-Regular.ttf');
-
 }
 
 function setup() {
@@ -40,10 +39,13 @@ function setup() {
     for (let i = 0; i < 8; i++) {
         var thumb = new Thumbnail();
         thumb.setTexture(thumbTexArr[i]);
+        thumb.setTitle(entries[i].title);
         ThumbnailArr.push(thumb);
     }
 
-    //testi = new DomElements('https://neort.io/embed/bptmfo43p9fefb92540g?autoStart=true&quality=1&info=true');
+    // init dom elements w/o actually creating them -> dom creation is initiated upon pressing 'v'
+    domElem = new DomElements();
+    //domElem = new DomElements('https://neort.io/embed/bptmfo43p9fefb92540g?autoStart=true&quality=1&info=true');
 
 }
 
@@ -57,11 +59,15 @@ function draw() {
     //console.log(rotateNum);
     for (let i = 0; i < 8; i++) {
         if (rotateNum > 0) {
-            if (i == (8 - rotateNum % 8) % 8) ThumbnailArr[i].atFront = true;
-            else ThumbnailArr[i].atFront = false;
+            if (i == (8 - rotateNum % 8) % 8) {
+                ThumbnailArr[i].atFront = true;
+                currentFrontIndex = i;
+            } else ThumbnailArr[i].atFront = false;
         } else {
-            if (i == (8 - (8 - abs(rotateNum) % 8) % 8) % 8) ThumbnailArr[i].atFront = true;
-            else ThumbnailArr[i].atFront = false;
+            if (i == (8 - (8 - abs(rotateNum) % 8) % 8) % 8) {
+                ThumbnailArr[i].atFront = true;
+                currentFrontIndex = i;
+            } else ThumbnailArr[i].atFront = false;
         }
         push();
         rotateY(QUARTER_PI * (i + rotateNum) + PI);
@@ -70,11 +76,8 @@ function draw() {
         push();
         rotateY(PI);
         ThumbnailArr[i].display();
-        ThumbnailArr[i].mouseInBounds();
-        fill(255);
-        text("index:" + i, 0, 200);
-        text("rotateNum:" + rotateNum, 0, 225);
-        if (ThumbnailArr[i].atFront) text("front", 0, 250);
+        //ThumbnailArr[i].mouseInBounds();
+
         pop();
         pop();
     }
@@ -92,6 +95,7 @@ function draw() {
     // thumbnail rotation
     manageRotation();
 
+    // if (domElem.domCreated) domElem.animate();
 }
 
 function windowResized() {
@@ -100,7 +104,9 @@ function windowResized() {
     SketchBar.setPosition(new p5.Vector(0, -windowHeight / 2 * 9 / 10, 0));
     AboutBar.setSize(windowWidth, 25);
     AboutBar.setPosition(new p5.Vector(0, -windowHeight / 2 * 8 / 10, 0));
-    testi.changePos(windowWidth * 0.5 - 300, windowHeight * 0.5 - 300);
+    //domElem.changePos(windowWidth * 0.5 - domElem.w * 0.5, windowHeight * 0.5 - domElem.h * 0.5);
+    domElem.resizeDimensions();
+    domElem.fixPosition();
 }
 
 var turnLeft;
@@ -110,27 +116,35 @@ var dest;
 function keyPressed() {
     switch (keyCode) {
         case LEFT_ARROW:
-            if (!turnLeft) {
-                turnLeft = true;
-                turnRight = false;
-                dest = rotateNum + 1;
+            if (!domElem.domCreated) {
+                if (!turnLeft) {
+                    turnLeft = true;
+                    turnRight = false;
+                    dest = rotateNum + 1;
+                }
+                //rotateNum--;
             }
-            //rotateNum--;
             break;
         case RIGHT_ARROW:
-            if (!turnRight) {
-                turnRight = true;
-                turnLeft = false;
-                dest = rotateNum - 1;
+            if (!domElem.domCreated) {
+                if (!turnRight) {
+                    turnRight = true;
+                    turnLeft = false;
+                    dest = rotateNum - 1;
+                }
             }
             //rotateNum++;
             break;
     }
     switch (key) {
         case 'v':
-            console.log("V");
-            testi = new DomElements('https://youtu.be/9Bwx4Azjc_E',
-                'https://github.com/kcarollee/kcarollee.github.io');
+            if (!domElem.domCreated) {
+                domElem.domCreated = true;
+                //domElem.createHeader("TESTING HEADER");
+                domElem.createButton();
+                domElem.createiFrame(entries[currentFrontIndex].vLink);
+                domElem.createAnchor(entries[currentFrontIndex].rLink);
+            }
             break;
     }
 }
@@ -152,20 +166,22 @@ function manageRotation() {
 }
 
 function mouseClicked() {
+    /*
     for (let i = 0; i < 8; i++) {
         //console.log(i);
         if (ThumbnailArr[i].mouseInBounds()) {
             //console.log("HELLO WHAT");
-            testi = new DomElements('https://neort.io/embed/bptmfo43p9fefb92540g?autoStart=true&quality=1&info=true',
+            domElem = new DomElements('https://neort.io/embed/bptmfo43p9fefb92540g?autoStart=true&quality=1&info=true',
                 'https://github.com/kcarollee/kcarollee.github.io');
             console.log("COMEONE");
-        } else testi.remove();
+        } else domElem.remove();
     }
+    */
     /*
     if (ThumbnailArr[0].mouseInBounds()) {
         console.log("HELLO");
-        testi = new DomElements('https://neort.io/embed/bptmfo43p9fefb92540g?autoStart=true&quality=1&info=true',
+        domElem = new DomElements('https://neort.io/embed/bptmfo43p9fefb92540g?autoStart=true&quality=1&info=true',
             'https://github.com/kcarollee/kcarollee.github.io');
-    } else testi.remove();
+    } else domElem.remove();
     */
 }
