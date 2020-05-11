@@ -5,26 +5,38 @@ class AboutPage {
         this.height = height;
         this.pos = pos;
 
-        this.header = createElement('h1', 'TEST');
-        this.header.position(0, windowHeight * 2 / 20);
+        this.header = createElement('h1', 'Dukwon Karl Lee');
+        this.header.position(10, windowHeight * 2.5 / 20);
+        this.header.style('font-family', 'customTTF');
+        this.header.style('font-size', 15 + 'px');
 
-
-        this.div = createDiv(' Currently majoring in Computer Science at University of Seoul (서울시립대)<br>' +
+        this.div = createDiv(' Currently majoring in Computer Science at University of Seoul(서울시립대).<br>' +
             ' A graphics hopeful creating sketches using openFrameworks, Processing, and p5.js.');
-        this.div.position(0, windowHeight * 4 / 20);
-
+        this.div.style('font-family', 'customTTF');
+        this.div.style('font-size', 14 + 'px');
+        this.div.position(10, windowHeight * 4 / 20);
+        this.div.style('font-family', 'customTTF');
+        this.div.style('font-size', 14 + 'px');
 
         this.githubLink = createElement('a', 'Github');
         this.githubLink.attribute('href', 'https://github.com/kcarollee');
         this.githubLink.attribute('target', '_blank');
-        this.githubLink.position(0, windowHeight * 6 / 20);
-
+        this.githubLink.position(10, windowHeight * 6 / 20);
+        this.githubLink.style('color', 'white');
         this.instaLink = createElement('a', 'Instagram');
         this.instaLink.attribute('href', 'https://www.instagram.com/kleemotfd/');
         this.instaLink.attribute('target', '_blank');
-        this.instaLink.position(0, windowHeight * 7 / 20);
+        this.instaLink.position(10, windowHeight * 7 / 20);
+        this.instaLink.style('color', 'black');
 
         this.hideDom();
+    }
+
+    fixPosition() {
+        this.header.position(10, windowHeight * 2.5 / 20);
+        this.div.position(10, windowHeight * 4 / 20);
+        this.githubLink.position(10, windowHeight * 6 / 20);
+        this.instaLink.position(10, windowHeight * 7 / 20);
     }
 
     showDom() {
@@ -54,9 +66,9 @@ class AboutPage {
     }
     display() {
         rectMode(CORNER);
-        fill(255);
+        fill('rgba(180, 180, 180, 0.5)');
         rect(this.pos.x, this.pos.y, this.width, this.height);
-        this.header.style('opacity', 0.2);
+        //text(' Dukwon Karl Lee', this.pos.x, this.pos.y + 10);
         //this.header.position(random(50, 100), random(50, 100));
     }
 }

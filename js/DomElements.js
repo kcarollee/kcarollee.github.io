@@ -24,7 +24,7 @@ class DomElements {
 
     createButton() {
         button = createButton('close');
-        button.position(windowWidth * 0.5 + this.w * 0.5 - 30, windowHeight * 0.5 + this.h * 0.5 + 15);
+        button.position(windowWidth * 0.5 + this.w * 0.5 - 40, windowHeight * 0.5 + this.h * 0.5 + 13);
         button.mouseClicked(closeDom);
         button.style('background-color', 'black');
         button.style('border', 'none');
@@ -34,7 +34,7 @@ class DomElements {
 
     createAnchor(codeSrc) {
         this.anchor = createElement('a', 'View source code');
-        this.anchor.position(windowWidth * 0.5 - this.w * 0.5, windowHeight * 0.5 + this.h * 0.5 + 15);
+        this.anchor.position(windowWidth * 0.5 - this.w * 0.5, windowHeight * 0.5 + this.h * 0.5);
         this.anchor.attribute('href', codeSrc);
         this.anchor.attribute('target', '_blank');
         this.anchor.style('color', 'white');

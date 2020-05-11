@@ -68,7 +68,7 @@ function setup() {
 function draw() {
     //shaders
     ShaderTexture.shader(BackgroundShader);
-    BackgroundShader.setUniform("resolution", [width, height]);
+    BackgroundShader.setUniform("resolution", [windowWidth, windowHeight]);
     BackgroundShader.setUniform("time", millis() / 1000.0);
     ShaderTexture.rect(0, 0, width, height);
 
@@ -82,7 +82,7 @@ function draw() {
     // Thumbnails
     gl.enable(gl.DEPTH_TEST);
     push();
-    let radius = 800 + 5 * sin(frameCount * 0.05);
+    let radius = 800;
     // manage sketch / about transition
     if (AboutBar.barContentShown && !SketchBar.barContentShown) {
         if (thumbYPos < windowHeight * 2.5) {
@@ -92,8 +92,7 @@ function draw() {
             AboutRect.height += 50;
         }
 
-    }
-    if (SketchBar.barContentShown) {
+    } else if (SketchBar.barContentShown) {
         if (thumbYPos > 0) {
             thumbYPos -= 70;
         }
@@ -117,7 +116,7 @@ function draw() {
         push();
         rotateY(QUARTER_PI * (i + rotateNum) + PI);
         //translate y:  floor(20 * i * PI + frameCount * 10) % windowHeight - windowHeight * 0.5
-        translate(0, thumbYPos, -radius);
+        translate(0, thumbYPos, -radius + 5 * sin(frameCount * 0.05 + QUARTER_PI * i));
         push();
         rotateY(PI);
         ThumbnailArr[i].display();
@@ -133,8 +132,12 @@ function draw() {
     SketchBar.mouseOver();
     AboutBar.mouseOver();
     AboutBar.setPosition(new p5.Vector(0, -windowHeight / 2 * 8 / 10, 0));
-    fill(255);
-    text(" Press 'v' to view sketch.", -windowWidth / 2.0, -windowHeight / 2 * 7 / 10);
+
+    // do not show the 'press v' message if the About page is shown. 
+    if (!AboutBar.barContentShown) {
+        fill(255);
+        text(" Press 'v' to view sketch.", -windowWidth / 2.0, -windowHeight / 2 * 7 / 10);
+    }
     // thumbnail rotation
     manageRotation();
 
@@ -157,6 +160,7 @@ function windowResized() {
     //domElem.changePos(windowWidth * 0.5 - domElem.w * 0.5, windowHeight * 0.5 - domElem.h * 0.5);
     domElem.resizeDimensions();
     domElem.fixPosition();
+    BackgroundShader.setUniform("resolution", [windowWidth, windowHeight]);
 }
 
 var turnLeft;
