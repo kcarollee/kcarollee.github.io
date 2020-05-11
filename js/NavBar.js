@@ -4,6 +4,7 @@ class NavBar {
         this.height = height;
         this.pos = pos;
         this.color = color(255);
+        this.barContentShown = true;
         //this.text;
     }
 
@@ -28,6 +29,11 @@ class NavBar {
         if (-this.width * 0.5 + this.pos.x < mouse[0] && mouse[0] < this.width * 0.5 + this.pos.x &&
             -this.height * 0.5 + this.pos.y < mouse[1] && mouse[1] < this.height * 0.5 + this.pos.y) {
             this.color = color(150);
-        } else this.color = color(255);
+            return true;
+        } else {
+            this.color = color(255)
+            return false;
+        };
+
     }
 }

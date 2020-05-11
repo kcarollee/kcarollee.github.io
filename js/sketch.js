@@ -2,9 +2,12 @@ var fixedMouse = (mx, my) => [mx - windowWidth / 2.0, my - windowHeight / 2.0];
 var thumbTexArr = [];
 var ThumbnailArr = [];
 var SketchBar;
-var vidTexTest;
 var AboutBar;
+var AboutRect;
 var rotateNum = 0;
+var aboutShown = false;
+var aboutShownNum = 0;
+var thumbYPos = 0;
 let img;
 let generalFont;
 let pg;
@@ -33,13 +36,16 @@ function setup() {
     textFont(generalFont);
     textSize(15);
     SketchBar = new NavBar(width, 25, new p5.Vector(0, -height / 2 * 9 / 10, 0));
-    SketchBar.setText("Sketches");
+    SketchBar.setText(" Sketches");
+    SketchBar.barContentShown = true;
     AboutBar = new NavBar(width, 25, new p5.Vector(0, -height / 2 * 8 / 10, 0));
-    AboutBar.setText("About");
-
+    AboutBar.setText(" About");
+    AboutBar.barContentShown = false;
+    AboutRect = new AboutPage(width, 0,
+        new p5.Vector(-AboutBar.width * 0.5, -height / 2 * 8 / 10 + AboutBar.height * 0.5, 0));
     // load images into texture array
     for (let i = 0; i < 8; i++) {
-        var img = loadImage('imgs/thumb' + i + '.png');
+        var img = loadImage('imgs/thumb' + i + '.jpg');
         thumbTexArr.push(img);
     }
 
@@ -70,14 +76,32 @@ function draw() {
     // background texture
     gl.disable(gl.DEPTH_TEST);
     texture(ShaderTexture);
+    rectMode(CENTER);
     rect(0, 0, width, height);
 
     // Thumbnails
     gl.enable(gl.DEPTH_TEST);
     push();
-    let radius = 800;
-    translate(0, 0, -radius * cos(PI / 8.0));
-    //console.log(rotateNum);
+    let radius = 800 + 5 * sin(frameCount * 0.05);
+    // manage sketch / about transition
+    if (AboutBar.barContentShown && !SketchBar.barContentShown) {
+        if (thumbYPos < windowHeight * 2.5) {
+            thumbYPos += 70;
+        }
+        if (AboutRect.height < windowHeight * 0.75) {
+            AboutRect.height += 50;
+        }
+
+    }
+    if (SketchBar.barContentShown) {
+        if (thumbYPos > 0) {
+            thumbYPos -= 70;
+        }
+        if (AboutRect.height > 0) {
+            AboutRect.height -= 50;
+        }
+    }
+    translate(0, thumbYPos, -radius * cos(PI / 8.0));
     for (let i = 0; i < 8; i++) {
         if (rotateNum > 0) {
             if (i == (8 - rotateNum % 8) % 8) {
@@ -93,12 +117,10 @@ function draw() {
         push();
         rotateY(QUARTER_PI * (i + rotateNum) + PI);
         //translate y:  floor(20 * i * PI + frameCount * 10) % windowHeight - windowHeight * 0.5
-        translate(0, 0, -radius);
+        translate(0, thumbYPos, -radius);
         push();
         rotateY(PI);
         ThumbnailArr[i].display();
-        //ThumbnailArr[i].mouseInBounds();
-
         pop();
         pop();
     }
@@ -112,10 +134,15 @@ function draw() {
     AboutBar.mouseOver();
     AboutBar.setPosition(new p5.Vector(0, -windowHeight / 2 * 8 / 10, 0));
     fill(255);
-    text("Press 'v' to view sketch.", -windowWidth / 2.0, -windowHeight / 2 * 7 / 10);
+    text(" Press 'v' to view sketch.", -windowWidth / 2.0, -windowHeight / 2 * 7 / 10);
     // thumbnail rotation
     manageRotation();
 
+    // about page
+    if (AboutBar.barContentShown) {
+        gl.disable(gl.DEPTH_TEST);
+        AboutRect.display();
+    }
     // if (domElem.domCreated) domElem.animate();
 }
 
@@ -125,6 +152,8 @@ function windowResized() {
     SketchBar.setPosition(new p5.Vector(0, -windowHeight / 2 * 9 / 10, 0));
     AboutBar.setSize(windowWidth, 25);
     AboutBar.setPosition(new p5.Vector(0, -windowHeight / 2 * 8 / 10, 0));
+    AboutRect.setSize(windowWidth, AboutRect.height);
+    AboutRect.setPosition(new p5.Vector(-AboutBar.width * 0.5, -height / 2 * 8 / 10 + AboutBar.height * 0.5, 0));
     //domElem.changePos(windowWidth * 0.5 - domElem.w * 0.5, windowHeight * 0.5 - domElem.h * 0.5);
     domElem.resizeDimensions();
     domElem.fixPosition();
@@ -206,7 +235,7 @@ function manageRotation() {
     }
 }
 manageRotation.loopNum = 0;
-console.log(manageRotation.rot);
+
 
 function mouseClicked() {
     /*
@@ -227,4 +256,17 @@ function mouseClicked() {
             'https://github.com/kcarollee/kcarollee.github.io');
     } else domElem.remove();
     */
+    if (AboutBar.mouseOver()) {
+        AboutRect.showDom();
+        frameCount = 0;
+        AboutBar.barContentShown = true;
+        SketchBar.barContentShown = false;
+        console.log("ABOUT BAR CLICKED");
+    } else if (SketchBar.mouseOver()) {
+        AboutRect.hideDom();
+        SketchBar.barContentShown = true;
+        if (AboutBar.height == 0) AboutBar.barContentShown = false;
+        console.log("Sketch BAR CLICKED");
+    }
+
 }
