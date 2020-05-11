@@ -1,8 +1,8 @@
 var fixedMouse = (mx, my) => [mx - windowWidth / 2.0, my - windowHeight / 2.0];
 var thumbTexArr = [];
 var ThumbnailArr = [];
-var SketchBar;
-var AboutBar;
+var SketchBar, AboutBar;
+var ToRightBar, ToLeftBar, ViewBar;
 var AboutRect;
 var rotateNum = 0;
 var aboutShown = false;
@@ -40,6 +40,12 @@ function setup() {
     SketchBar.barContentShown = true;
     AboutBar = new NavBar(width, 25, new p5.Vector(0, -height / 2 * 8 / 10, 0));
     AboutBar.setText(" About");
+    ToLeftBar = new NavBar(40, 20, new p5.Vector(-60, height / 2 * 8 / 10, 0));
+    ToLeftBar.setText("<<<<");
+    ToRightBar = new NavBar(40, 20, new p5.Vector(60, height / 2 * 8 / 10, 0));
+    ToRightBar.setText(">>>>");
+    ViewBar = new NavBar(40, 20, new p5.Vector(0, height / 2 * 8 / 10, 0));
+    ViewBar.setText("VIEW");
     AboutBar.barContentShown = false;
     AboutRect = new AboutPage(width, 0,
         new p5.Vector(-AboutBar.width * 0.5, -height / 2 * 8 / 10 + AboutBar.height * 0.5, 0));
@@ -133,10 +139,16 @@ function draw() {
     AboutBar.mouseOver();
     AboutBar.setPosition(new p5.Vector(0, -windowHeight / 2 * 8 / 10, 0));
 
-    // do not show the 'press v' message if the About page is shown. 
-    if (!AboutBar.barContentShown) {
+    // do not show the 'press v'  or the arrow bars if the About page is shown. 
+    if (SketchBar.barContentShown) {
+        ToLeftBar.display();
+        ToRightBar.display();
+        ViewBar.display();
+        ToLeftBar.mouseOver();
+        ToRightBar.mouseOver();
+        ViewBar.mouseOver();
         fill(255);
-        text(" Press 'v' to view sketch.", -windowWidth / 2.0, -windowHeight / 2 * 7 / 10);
+        text(" Press v or 'view' to view sketch.", -windowWidth / 2.0, -windowHeight / 2 * 7 / 10);
     }
     // thumbnail rotation
     manageRotation();
@@ -145,6 +157,7 @@ function draw() {
     if (AboutBar.barContentShown) {
         gl.disable(gl.DEPTH_TEST);
         AboutRect.display();
+
     }
     // if (domElem.domCreated) domElem.animate();
 }
@@ -155,6 +168,10 @@ function windowResized() {
     SketchBar.setPosition(new p5.Vector(0, -windowHeight / 2 * 9 / 10, 0));
     AboutBar.setSize(windowWidth, 25);
     AboutBar.setPosition(new p5.Vector(0, -windowHeight / 2 * 8 / 10, 0));
+
+    ToLeftBar.setPosition(new p5.Vector(-60, windowHeight / 2 * 8 / 10, 0));
+    ToRightBar.setPosition(new p5.Vector(60, windowHeight / 2 * 8 / 10, 0));
+    ViewBar.setPosition(new p5.Vector(0, windowHeight / 2 * 8 / 10, 0))
     AboutRect.setSize(windowWidth, AboutRect.height);
     AboutRect.setPosition(new p5.Vector(-AboutBar.width * 0.5, -height / 2 * 8 / 10 + AboutBar.height * 0.5, 0));
     //domElem.changePos(windowWidth * 0.5 - domElem.w * 0.5, windowHeight * 0.5 - domElem.h * 0.5);
@@ -271,6 +288,38 @@ function mouseClicked() {
         SketchBar.barContentShown = true;
         if (AboutBar.height == 0) AboutBar.barContentShown = false;
         console.log("Sketch BAR CLICKED");
+    }
+    if (ToLeftBar.mouseOver()) {
+        // keyboard disabled when dom elements are visible
+        if (!domElem.domCreated) {
+            // nested if loop to prevent turning while rotating 
+            if (!turnRight) {
+                if (!turnLeft) {
+                    turnLeft = true;
+                    turnRight = false;
+                    dest = rotateNum + 1;
+                }
+            }
+            //rotateNum--;
+        }
+    } else if (ToRightBar.mouseOver()) {
+        if (!domElem.domCreated) {
+            if (!turnLeft) {
+                if (!turnRight) {
+                    turnRight = true;
+                    turnLeft = false;
+                    dest = rotateNum - 1;
+                }
+            }
+        }
+    } else if (ViewBar.mouseOver()) {
+        if (!domElem.domCreated) {
+            domElem.domCreated = true;
+            //domElem.createHeader("TESTING HEADER");
+            domElem.createButton();
+            domElem.createiFrame(entries[currentFrontIndex].vLink);
+            domElem.createAnchor(entries[currentFrontIndex].rLink);
+        }
     }
 
 }

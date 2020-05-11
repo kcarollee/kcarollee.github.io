@@ -15,7 +15,7 @@ float lightOrb(vec2 st, vec2 orbPos, float intensity){
 void main()
 {	
     float PI = 3.1415926535897932384626433832795;
-	vec2 st = gl_FragCoord.xy / resolution;
+	vec2 st = gl_FragCoord.xy / max(resolution.x, resolution.y);
 	vec2 center;
 	center = vec2(0.5);
 	vec3 color = vec3(0.0);	

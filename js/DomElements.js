@@ -2,8 +2,9 @@ var button;
 
 class DomElements {
     constructor() {
-        this.w = windowHeight * 0.75;
-        this.h = windowHeight * 0.75;
+        let m = min(windowWidth, windowHeight);
+        this.w = m * 0.75;
+        this.h = m * 0.75;
         this.currentHeaderHeight = windowHeight * 0.5;
         this.domCreated = false;
     }
@@ -52,8 +53,9 @@ class DomElements {
     }
 
     resizeDimensions() {
-        this.w = windowHeight * 0.75;
-        this.h = windowHeight * 0.75;
+        let m = min(windowWidth, windowHeight);
+        this.w = m * 0.75;
+        this.h = m * 0.75;
         this.iFrame.attribute('width', this.w + 'px');
         this.iFrame.attribute('height', this.h + 'px');
     }

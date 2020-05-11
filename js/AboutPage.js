@@ -11,7 +11,7 @@ class AboutPage {
         this.header.style('font-size', 15 + 'px');
 
         this.div = createDiv(' Currently majoring in Computer Science at University of Seoul(서울시립대).<br>' +
-            ' A graphics hopeful creating sketches using openFrameworks, Processing, and p5.js.');
+            ' A graphics hopeful creating sketches using openFrameworks, glsl, Processing, and p5.js.');
         this.div.style('font-family', 'customTTF');
         this.div.style('font-size', 14 + 'px');
         this.div.position(10, windowHeight * 4 / 20);
@@ -21,13 +21,18 @@ class AboutPage {
         this.githubLink = createElement('a', 'Github');
         this.githubLink.attribute('href', 'https://github.com/kcarollee');
         this.githubLink.attribute('target', '_blank');
-        this.githubLink.position(10, windowHeight * 6 / 20);
+        this.githubLink.position(10, windowHeight + this.pos.y + this.height - 10);
         this.githubLink.style('color', 'white');
+        this.githubLink.style('font-family', 'customTTF');
+        this.githubLink.style('font-size', 14 + 'px');
+
         this.instaLink = createElement('a', 'Instagram');
         this.instaLink.attribute('href', 'https://www.instagram.com/kleemotfd/');
         this.instaLink.attribute('target', '_blank');
-        this.instaLink.position(10, windowHeight * 7 / 20);
-        this.instaLink.style('color', 'black');
+        this.instaLink.position(80, windowHeight + this.pos.y + this.height - 10);
+        this.instaLink.style('color', 'white');
+        this.instaLink.style('font-family', 'customTTF');
+        this.instaLink.style('font-size', 14 + 'px');
 
         this.hideDom();
     }
