@@ -31,6 +31,16 @@ const titles = [
     'PARTICLES WITH ofxOpenCv'
 ];
 
+const instaLinks = [
+    'https://www.instagram.com/p/B7YIGexnUk5/',
+    'https://www.instagram.com/p/B5kjDzKn-MG/',
+    'https://www.instagram.com/p/B4SJN5XnQzg/',
+    'https://www.instagram.com/p/B6sLbZfHDeu/',
+    'https://www.instagram.com/p/B78Nl6zHy2A/',
+    'https://www.instagram.com/p/B6dCyrGHrT6/',
+    'https://www.instagram.com/p/B9G-DkqHrL1/'
+];
+
 const entries = [
     { vLink: videoLinks[0], rLink: repoLinks[0], title: titles[0] },
     { vLink: videoLinks[1], rLink: repoLinks[1], title: titles[1] },

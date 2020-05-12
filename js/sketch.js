@@ -24,34 +24,17 @@ function preload() {
 }
 
 function setup() {
-    // canv init
+    // init canvas
     var canv = createCanvas(windowWidth, windowHeight, WEBGL);
     canv.position(0, 0);
     canv.style('z-index', '-1');
 
-    // shader init
+    // init shader
     ShaderTexture = createGraphics(windowWidth, windowHeight, WEBGL);
     ShaderTexture.noStroke();
-
-    textFont(generalFont);
-    textSize(15);
-    SketchBar = new NavBar(width, 25, new p5.Vector(0, -height / 2 * 9 / 10, 0));
-    SketchBar.setText(" Sketches");
-    SketchBar.barContentShown = true;
-    AboutBar = new NavBar(width, 25, new p5.Vector(0, -height / 2 * 8 / 10, 0));
-    AboutBar.setText(" About");
-    ToLeftBar = new NavBar(40, 20, new p5.Vector(-60, height / 2 * 8 / 10, 0));
-    ToLeftBar.setText("<<<<");
-    ToRightBar = new NavBar(40, 20, new p5.Vector(60, height / 2 * 8 / 10, 0));
-    ToRightBar.setText(">>>>");
-    ViewBar = new NavBar(40, 20, new p5.Vector(0, height / 2 * 8 / 10, 0));
-    ViewBar.setText("VIEW");
-    AboutBar.barContentShown = false;
-    AboutRect = new AboutPage(width, 0,
-        new p5.Vector(-AboutBar.width * 0.5, -height / 2 * 8 / 10 + AboutBar.height * 0.5, 0));
     // load images into texture array
     for (let i = 0; i < 8; i++) {
-        var img = loadImage('imgs/thumb' + i + '.jpg');
+        var img = loadImage('imgs/mainThumbs/thumb' + i + '.jpg');
         thumbTexArr.push(img);
     }
 
@@ -66,6 +49,28 @@ function setup() {
     // init dom elements w/o actually creating them -> dom creation is initiated upon pressing 'v'
     domElem = new DomElements();
 
+    // init text
+    textFont(generalFont);
+    textSize(15);
+
+    // init nav bars
+    SketchBar = new NavBar(width, 25, new p5.Vector(0, -height / 2 * 9 / 10, 0));
+    SketchBar.setText(" Sketches");
+    SketchBar.barContentShown = true;
+    AboutBar = new NavBar(width, 25, new p5.Vector(0, -height / 2 * 8 / 10, 0));
+    AboutBar.setText(" About");
+    ToLeftBar = new NavBar(40, 20, new p5.Vector(-60, height / 2 * 8 / 10, 0));
+    ToLeftBar.setText("<<<<");
+    ToRightBar = new NavBar(40, 20, new p5.Vector(60, height / 2 * 8 / 10, 0));
+    ToRightBar.setText(">>>>");
+    ViewBar = new NavBar(40, 20, new p5.Vector(0, height / 2 * 8 / 10, 0));
+    ViewBar.setText("VIEW");
+    AboutBar.barContentShown = false;
+
+    // init about page
+    AboutRect = new AboutPage(width, 0,
+        new p5.Vector(-AboutBar.width * 0.5, -height / 2 * 8 / 10 + AboutBar.height * 0.5, 0));
+
     // for enabling / disabling depth test
     gl = this._renderer.GL;
     gl.disable(gl.DEPTH_TEST);
@@ -76,62 +81,66 @@ function draw() {
     ShaderTexture.shader(BackgroundShader);
     BackgroundShader.setUniform("resolution", [windowWidth, windowHeight]);
     BackgroundShader.setUniform("time", millis() / 1000.0);
-    ShaderTexture.rect(0, 0, width, height);
+    ShaderTexture.rect(0, 0, windowWidth, windowHeight);
 
     background(0);
     // background texture
     gl.disable(gl.DEPTH_TEST);
     texture(ShaderTexture);
     rectMode(CENTER);
-    rect(0, 0, width, height);
+    rect(0, 0, windowWidth, windowHeight);
 
     // Thumbnails
-    gl.enable(gl.DEPTH_TEST);
-    push();
-    let radius = 800;
-    // manage sketch / about transition
-    if (AboutBar.barContentShown && !SketchBar.barContentShown) {
-        if (thumbYPos < windowHeight * 2.5) {
-            thumbYPos += 70;
-        }
-        if (AboutRect.height < windowHeight * 0.75) {
-            AboutRect.height += 50;
-        }
-
-    } else if (SketchBar.barContentShown) {
-        if (thumbYPos > 0) {
-            thumbYPos -= 70;
-        }
-        if (AboutRect.height > 0) {
-            AboutRect.height -= 50;
-        }
-    }
-    translate(0, thumbYPos, -radius * cos(PI / 8.0));
-    for (let i = 0; i < 8; i++) {
-        if (rotateNum > 0) {
-            if (i == (8 - rotateNum % 8) % 8) {
-                ThumbnailArr[i].atFront = true;
-                currentFrontIndex = i;
-            } else ThumbnailArr[i].atFront = false;
-        } else {
-            if (i == (8 - (8 - abs(rotateNum) % 8) % 8) % 8) {
-                ThumbnailArr[i].atFront = true;
-                currentFrontIndex = i;
-            } else ThumbnailArr[i].atFront = false;
-        }
+    if (!AboutRect.fullyLoaded) {
+        gl.enable(gl.DEPTH_TEST);
         push();
-        rotateY(QUARTER_PI * (i + rotateNum) + PI);
-        //translate y:  floor(20 * i * PI + frameCount * 10) % windowHeight - windowHeight * 0.5
-        translate(0, thumbYPos, -radius + 5 * sin(frameCount * 0.05 + QUARTER_PI * i));
-        push();
-        rotateY(PI);
-        ThumbnailArr[i].display();
-        pop();
-        pop();
-    }
-    pop();
-    //console.log(fixedMouse(mouseX, mouseY));
+        let radius = 800;
+        // manage sketch / about transition
+        if (AboutBar.barContentShown && !SketchBar.barContentShown) {
+            if (thumbYPos < windowHeight * 2.5) {
+                thumbYPos += 70;
+            }
+            if (AboutRect.height < windowHeight) {
+                AboutRect.height += 50;
+            } else AboutRect.fullyLoaded = true;
 
+        } else if (SketchBar.barContentShown) {
+            if (thumbYPos > 0) {
+                thumbYPos -= 70;
+            }
+            if (AboutRect.height > 0) {
+                AboutRect.height -= 50;
+            } else {
+                AboutRect.fullyLoaded = false;
+                AboutBar.barContentShown = false;
+            }
+        }
+        translate(0, thumbYPos, -radius * cos(PI / 8.0));
+        for (let i = 0; i < 8; i++) {
+            if (rotateNum > 0) {
+                if (i == (8 - rotateNum % 8) % 8) {
+                    ThumbnailArr[i].atFront = true;
+                    currentFrontIndex = i;
+                } else ThumbnailArr[i].atFront = false;
+            } else {
+                if (i == (8 - (8 - abs(rotateNum) % 8) % 8) % 8) {
+                    ThumbnailArr[i].atFront = true;
+                    currentFrontIndex = i;
+                } else ThumbnailArr[i].atFront = false;
+            }
+            push();
+            rotateY(QUARTER_PI * (i + rotateNum) + PI);
+            //translate y:  floor(20 * i * PI + frameCount * 10) % windowHeight - windowHeight * 0.5
+            translate(0, thumbYPos, -radius + 5 * sin(frameCount * 0.05 + QUARTER_PI * i));
+            push();
+            rotateY(PI);
+            ThumbnailArr[i].display();
+            pop();
+            pop();
+        }
+        pop();
+        //console.log(fixedMouse(mouseX, mouseY));
+    }
     // navigation bars
     SketchBar.display();
     AboutBar.display();
@@ -157,7 +166,6 @@ function draw() {
     if (AboutBar.barContentShown) {
         gl.disable(gl.DEPTH_TEST);
         AboutRect.display();
-
     }
     // if (domElem.domCreated) domElem.animate();
 }
@@ -174,6 +182,8 @@ function windowResized() {
     ViewBar.setPosition(new p5.Vector(0, windowHeight / 2 * 8 / 10, 0))
     AboutRect.setSize(windowWidth, AboutRect.height);
     AboutRect.setPosition(new p5.Vector(-AboutBar.width * 0.5, -height / 2 * 8 / 10 + AboutBar.height * 0.5, 0));
+    AboutRect.fixPosition();
+    AboutRect.fixImgSize();
     //domElem.changePos(windowWidth * 0.5 - domElem.w * 0.5, windowHeight * 0.5 - domElem.h * 0.5);
     domElem.resizeDimensions();
     domElem.fixPosition();
@@ -259,24 +269,6 @@ manageRotation.loopNum = 0;
 
 
 function mouseClicked() {
-    /*
-    for (let i = 0; i < 8; i++) {
-        //console.log(i);
-        if (ThumbnailArr[i].mouseInBounds()) {
-            //console.log("HELLO WHAT");
-            domElem = new DomElements('https://neort.io/embed/bptmfo43p9fefb92540g?autoStart=true&quality=1&info=true',
-                'https://github.com/kcarollee/kcarollee.github.io');
-            console.log("COMEONE");
-        } else domElem.remove();
-    }
-    */
-    /*
-    if (ThumbnailArr[0].mouseInBounds()) {
-        console.log("HELLO");
-        domElem = new DomElements('https://neort.io/embed/bptmfo43p9fefb92540g?autoStart=true&quality=1&info=true',
-            'https://github.com/kcarollee/kcarollee.github.io');
-    } else domElem.remove();
-    */
     if (AboutBar.mouseOver()) {
         AboutRect.showDom();
         frameCount = 0;
@@ -284,6 +276,7 @@ function mouseClicked() {
         SketchBar.barContentShown = false;
         console.log("ABOUT BAR CLICKED");
     } else if (SketchBar.mouseOver()) {
+        AboutRect.fullyLoaded = false;
         AboutRect.hideDom();
         SketchBar.barContentShown = true;
         if (AboutBar.height == 0) AboutBar.barContentShown = false;
@@ -300,7 +293,6 @@ function mouseClicked() {
                     dest = rotateNum + 1;
                 }
             }
-            //rotateNum--;
         }
     } else if (ToRightBar.mouseOver()) {
         if (!domElem.domCreated) {
@@ -315,7 +307,6 @@ function mouseClicked() {
     } else if (ViewBar.mouseOver()) {
         if (!domElem.domCreated) {
             domElem.domCreated = true;
-            //domElem.createHeader("TESTING HEADER");
             domElem.createButton();
             domElem.createiFrame(entries[currentFrontIndex].vLink);
             domElem.createAnchor(entries[currentFrontIndex].rLink);
