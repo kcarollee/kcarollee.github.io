@@ -102,6 +102,7 @@ function draw() {
             }
             if (AboutRect.height < windowHeight) {
                 AboutRect.height += 50;
+                if (AboutRect.opacity < 1.0) AboutRect.opacity += 0.05;
             } else AboutRect.fullyLoaded = true;
 
         } else if (SketchBar.barContentShown) {
@@ -109,6 +110,7 @@ function draw() {
                 thumbYPos -= 70;
             }
             if (AboutRect.height > 0) {
+                AboutRect.fullyLoaded = false;
                 AboutRect.height -= 50;
             } else {
                 AboutRect.fullyLoaded = false;

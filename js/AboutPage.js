@@ -152,12 +152,10 @@ class AboutPage {
 
 
 
-        if (this.opacity < 1.0 && !this.fullyLoaded) {
-            console.log("FINAL OPACITY" + this.opacity);
-            this.opacity += 0.05;
-            for (let i = 0; i < this.imgNum; i++) {
-                this.imgAnchorArr[i][1].style('opacity', this.opacity);
-            }
+
+        for (let i = 0; i < this.imgNum; i++) {
+            this.imgAnchorArr[i][1].style('opacity', this.opacity);
         }
+
     }
 }
