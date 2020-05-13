@@ -13,7 +13,6 @@ class AboutPage {
         this.div = createDiv(' Currently majoring in Computer Science at University of Seoul(서울시립대).<br><br>' +
             ' A graphics hopeful creating sketches using openFrameworks, glsl, Processing, and p5.js.<br><br>' +
             ' Currently on my learning backlog are: Touchdesigner, Unity, Three.js, openFrameworks with emscripten.');
-        //sthis.div.style('width', '50%');
         this.div.style('font-family', 'customTTF');
         this.div.style('font-size', 14 + 'px');
         this.div.position(10, windowHeight * 4 / 20);
@@ -39,19 +38,9 @@ class AboutPage {
         this.imgAnchorArr = [];
         this.m = min(windowWidth, windowHeight);
         this.imgSize = this.m * 0.40;
+
         this.imgNum = instaLinks.length;
-        /*
-        for (let i = 0; i < this.imgNum; i++) {
-            let img = loadImage('imgs/test' + (i % 2) + '.jpg');
-            //img.resize(this.imgSize * 0.40, this.imgSize * 0.40);
-            this.imgAnchorArr.push(img);
-        }
-
-
-        this.anchor = createElement('a', '');
-        this.anchor.attribute('href', 'https://google.com');
-        this.anchor.attribute('target', '_blank');
-        */
+        this.imgBandLength = this.imgSize * this.imgNum;
         this.opacity = 0.0
         for (let i = 0; i < this.imgNum; i++) {
             var anchor = createElement('a', '');
@@ -64,7 +53,7 @@ class AboutPage {
             imgElem.attribute('width', this.imgSize + 'px');
             imgElem.attribute('height', this.imgSize + 'px');
             imgElem.style('opacity', this.opacity);
-            //imgElem.style('background-repeat', 'repeat-x');
+
             imgElem.position(i * this.imgSize, windowHeight * 7.5 / 20);
             this.imgAnchorArr.push([anchor, imgElem]);
         }
@@ -87,6 +76,7 @@ class AboutPage {
         this.imgSize = this.m * 0.40;
         this.imgNum = instaLinks.length;
 
+        this.imgBandLength = this.imgSize * this.imgNum;
         for (let i = 0; i < this.imgNum; i++) {
             this.imgAnchorArr[i][1].attribute('width', this.imgSize + 'px');
             this.imgAnchorArr[i][1].attribute('height', this.imgSize + 'px');
@@ -94,12 +84,12 @@ class AboutPage {
         }
     }
     moveImages() {
-        this.imgAnchorArr.forEach(function(arr) {
-            arr[1].x += 1;
-            arr[1].position(arr[1].x % windowWidth, 0);
-        });
+        for (let i = 0; i < this.imgNum; i++) {
+            if (this.imgAnchorArr[i][1].x > this.imgBandLength - this.imgSize) this.imgAnchorArr[i][1].x = -this.imgSize;
+            this.imgAnchorArr[i][1].x += 1;
+            this.imgAnchorArr[i][1].position(this.imgAnchorArr[i][1].x, windowHeight * 7.5 / 20);
+        }
     }
-
 
     showDom() {
         this.header.show();
@@ -113,7 +103,6 @@ class AboutPage {
     }
 
     hideDom() {
-        console.log("HIDE");
         this.header.hide();
         this.div.hide();
         this.githubLink.hide();
@@ -123,14 +112,7 @@ class AboutPage {
             a[1].hide();
         });
         this.opacity = 0.0;
-        console.log("SET OPACITY" + this.opacity);
         this.fullyLoaded = false;
-        /*
-        for (let i = 0; i < this.imgNum; i++) {
-            console.log(this.opacity);
-            this.imgAnchorArr[i][1].style('opacity', this.opacity);
-        }
-        */
     }
     setText(text) {
         this.text = text;
@@ -143,16 +125,10 @@ class AboutPage {
         this.pos = pos;
     }
     display() {
-        //this.moveImages();
+        this.moveImages();
         rectMode(CORNER);
         fill('rgba(190, 190, 190, 0.3)');
         rect(this.pos.x, this.pos.y, this.width, this.height);
-        //text(' Dukwon Karl Lee', this.pos.x, this.pos.y + 10);
-        //this.header.position(random(50, 100), random(50, 100));
-
-
-
-
         for (let i = 0; i < this.imgNum; i++) {
             this.imgAnchorArr[i][1].style('opacity', this.opacity);
         }

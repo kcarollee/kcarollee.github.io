@@ -18,7 +18,6 @@ class DomElements {
         this.iFrame.attribute('scrolling', 'no');
         this.iFrame.attribute('overflow', 'hidden');
         this.iFrame.style('overflow', 'hidden');
-        //this.iFrame.attribute('style', 'position:relative');
         this.iFrame.position(windowWidth * 0.5 - this.w * 0.5, windowHeight * 0.5 - this.h * 0.5);
 
     }
@@ -61,10 +60,7 @@ class DomElements {
     }
     animate() {
         var h = windowHeight * 0.5 - 300 - 70;
-        if (this.currentHeaderHeight > h) {
-            //console.log("HEIGHT CHANGE");
-            this.currentHeaderHeight -= 1;
-        }
+        if (this.currentHeaderHeight > h) this.currentHeaderHeight -= 1;
         this.header.position(windowWidth * 0.5 - 300, this.currentHeaderHeight);
     }
 

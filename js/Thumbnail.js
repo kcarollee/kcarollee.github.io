@@ -13,16 +13,12 @@ class Thumbnail {
             let h = windowHeight * 0.5;
             if (-w * 0.5 < mouse[0] && mouse[0] < w * 0.5 &&
                 -h * 0.5 < mouse[1] && mouse[1] < h * 0.5) {
-                //this.imgTexture = loadImage('imgs/thumb2.png');
-                //console.log("IN BOUNDS");
                 return true;
             }
             return false;
         }
         return false;
     }
-
-
     display() {
         if (this.atFront) {
             fill(255);

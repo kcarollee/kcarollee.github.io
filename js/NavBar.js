@@ -5,7 +5,6 @@ class NavBar {
         this.pos = pos;
         this.color = color(255);
         this.barContentShown = true;
-        //this.text;
     }
 
     setText(text) { this.text = text; }

@@ -102,7 +102,7 @@ function draw() {
             }
             if (AboutRect.height < windowHeight) {
                 AboutRect.height += 50;
-                if (AboutRect.opacity < 1.0) AboutRect.opacity += 0.05;
+                if (AboutRect.opacity < 1.0) AboutRect.opacity += 0.1;
             } else AboutRect.fullyLoaded = true;
 
         } else if (SketchBar.barContentShown) {
@@ -133,7 +133,7 @@ function draw() {
             push();
             rotateY(QUARTER_PI * (i + rotateNum) + PI);
             //translate y:  floor(20 * i * PI + frameCount * 10) % windowHeight - windowHeight * 0.5
-            translate(0, thumbYPos, -radius + 5 * sin(frameCount * 0.05 + QUARTER_PI * i));
+            translate(0, thumbYPos, -radius + 3 * sin(frameCount * 0.05 + QUARTER_PI * i));
             push();
             rotateY(PI);
             ThumbnailArr[i].display();
@@ -141,7 +141,6 @@ function draw() {
             pop();
         }
         pop();
-        //console.log(fixedMouse(mouseX, mouseY));
     }
     // navigation bars
     SketchBar.display();
@@ -169,7 +168,6 @@ function draw() {
         gl.disable(gl.DEPTH_TEST);
         AboutRect.display();
     }
-    // if (domElem.domCreated) domElem.animate();
 }
 
 function windowResized() {
@@ -178,7 +176,6 @@ function windowResized() {
     SketchBar.setPosition(new p5.Vector(0, -windowHeight / 2 * 9 / 10, 0));
     AboutBar.setSize(windowWidth, 25);
     AboutBar.setPosition(new p5.Vector(0, -windowHeight / 2 * 8 / 10, 0));
-
     ToLeftBar.setPosition(new p5.Vector(-60, windowHeight / 2 * 8 / 10, 0));
     ToRightBar.setPosition(new p5.Vector(60, windowHeight / 2 * 8 / 10, 0));
     ViewBar.setPosition(new p5.Vector(0, windowHeight / 2 * 8 / 10, 0))
@@ -186,7 +183,6 @@ function windowResized() {
     AboutRect.setPosition(new p5.Vector(-AboutBar.width * 0.5, -height / 2 * 8 / 10 + AboutBar.height * 0.5, 0));
     AboutRect.fixPosition();
     AboutRect.fixImgSize();
-    //domElem.changePos(windowWidth * 0.5 - domElem.w * 0.5, windowHeight * 0.5 - domElem.h * 0.5);
     domElem.resizeDimensions();
     domElem.fixPosition();
     BackgroundShader.setUniform("resolution", [windowWidth, windowHeight]);
@@ -209,7 +205,6 @@ function keyPressed() {
                         dest = rotateNum + 1;
                     }
                 }
-                //rotateNum--;
             }
             break;
         case RIGHT_ARROW:
@@ -222,14 +217,12 @@ function keyPressed() {
                     }
                 }
             }
-            //rotateNum++;
             break;
     }
     switch (key) {
         case 'v':
             if (!domElem.domCreated) {
                 domElem.domCreated = true;
-                //domElem.createHeader("TESTING HEADER");
                 domElem.createButton();
                 domElem.createiFrame(entries[currentFrontIndex].vLink);
                 domElem.createAnchor(entries[currentFrontIndex].rLink);
@@ -241,12 +234,10 @@ function keyPressed() {
 function manageRotation() {
     if (turnLeft) {
         if (rotateNum - dest < 0.01) {
-            //rotateNum += 0.03;
             manageRotation.loopNum++;
-            rotateNum += 0.00001 * manageRotation.loopNum * (200 - manageRotation.loopNum);
+            rotateNum += 0.00001 * manageRotation.loopNum * (200 + manageRotation.loopNum);
+
         } else {
-            //manageRotation.loopNum--;
-            //rotateNum -= 0.00001 * manageRotation.loopNum * (200 - manageRotation.loopNum);
             manageRotation.rot = 0;
             manageRotation.loopNum = 0;
             rotateNum = dest;
@@ -256,10 +247,8 @@ function manageRotation() {
         if (dest - rotateNum < 0.01) {
             //rotateNum -= 0.03;
             manageRotation.loopNum++;
-            rotateNum -= 0.00001 * manageRotation.loopNum * (200 - manageRotation.loopNum);
+            rotateNum -= 0.00001 * manageRotation.loopNum * (200 + manageRotation.loopNum);
         } else {
-            //manageRotation.loopNum--;
-            //rotateNum += 0.00001 * manageRotation.loopNum * (200 - manageRotation.loopNum);
             manageRotation.rot = 0;
             manageRotation.loopNum = 0;
             rotateNum = dest;
@@ -269,20 +258,17 @@ function manageRotation() {
 }
 manageRotation.loopNum = 0;
 
-
 function mouseClicked() {
     if (AboutBar.mouseOver()) {
         AboutRect.showDom();
         frameCount = 0;
         AboutBar.barContentShown = true;
         SketchBar.barContentShown = false;
-        console.log("ABOUT BAR CLICKED");
     } else if (SketchBar.mouseOver()) {
         AboutRect.fullyLoaded = false;
         AboutRect.hideDom();
         SketchBar.barContentShown = true;
         if (AboutBar.height == 0) AboutBar.barContentShown = false;
-        console.log("Sketch BAR CLICKED");
     }
     if (ToLeftBar.mouseOver()) {
         // keyboard disabled when dom elements are visible
