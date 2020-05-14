@@ -21,6 +21,11 @@ let gl;
 function preload() {
     generalFont = loadFont('fonts/Monoid-Regular.ttf');
     BackgroundShader = loadShader('shaders/BackgroundShader.vert', 'shaders/BackgroundShader.frag');
+    // load images into texture array
+    for (let i = 0; i < 8; i++) {
+        var img = loadImage('imgs/mainThumbs/thumb' + i + '.jpg');
+        thumbTexArr.push(img);
+    }
 }
 
 function setup() {
@@ -32,12 +37,13 @@ function setup() {
     // init shader
     ShaderTexture = createGraphics(windowWidth, windowHeight, WEBGL);
     ShaderTexture.noStroke();
+    /*
     // load images into texture array
     for (let i = 0; i < 8; i++) {
         var img = loadImage('imgs/mainThumbs/thumb' + i + '.jpg');
         thumbTexArr.push(img);
     }
-
+*/
     // init Thumbnails
     for (let i = 0; i < 8; i++) {
         var thumb = new Thumbnail();
@@ -64,7 +70,7 @@ function setup() {
     ToRightBar = new NavBar(40, 20, new p5.Vector(60, height / 2 * 8 / 10, 0));
     ToRightBar.setText(">>>>");
     ViewBar = new NavBar(40, 20, new p5.Vector(0, height / 2 * 8 / 10, 0));
-    ViewBar.setText("VIEW");
+    ViewBar.setText("PLAY");
     AboutBar.barContentShown = false;
 
     // init about page
@@ -74,6 +80,22 @@ function setup() {
     // for enabling / disabling depth test
     gl = this._renderer.GL;
     gl.disable(gl.DEPTH_TEST);
+    //gl.useProgram();
+}
+
+
+function setUniformArray(shader, uniformName, data) {
+    const uniform = shader.uniforms[uniformName];
+    const location = uniform.location;
+    switch (uniform.type) {
+        case gl.FLOAT:
+            if (uniform.size > 1) {
+                gl.uniform1fv(location, data);
+            } else {
+                gl.uniform1f(location, data);
+            }
+            break;
+    }
 }
 
 function draw() {
@@ -81,6 +103,7 @@ function draw() {
     ShaderTexture.shader(BackgroundShader);
     BackgroundShader.setUniform("resolution", [windowWidth, windowHeight]);
     BackgroundShader.setUniform("time", millis() / 1000.0);
+    //setUniformArray(BackgroundShader, "piArr", [3.14, 3.14]);
     ShaderTexture.rect(0, 0, windowWidth, windowHeight);
 
     background(0);
@@ -149,7 +172,7 @@ function draw() {
     AboutBar.mouseOver();
     AboutBar.setPosition(new p5.Vector(0, -windowHeight / 2 * 8 / 10, 0));
 
-    // do not show the 'press v'  or the arrow bars if the About page is shown. 
+    // do not show the 'press enter'  or the arrow bars if the About page is shown. 
     if (SketchBar.barContentShown) {
         ToLeftBar.display();
         ToRightBar.display();
@@ -158,7 +181,7 @@ function draw() {
         ToRightBar.mouseOver();
         ViewBar.mouseOver();
         fill(255);
-        text(" Press v or 'view' to view sketch.", -windowWidth / 2.0, -windowHeight / 2 * 7 / 10);
+        text(" Press Enter or click 'PLAY' to play sketch.", -220, -windowHeight / 2 * 6.5 / 10);
     }
     // thumbnail rotation
     manageRotation();
@@ -219,14 +242,17 @@ function keyPressed() {
             }
             break;
     }
-    switch (key) {
-        case 'v':
+    switch (keyCode) {
+        case ENTER:
             if (!domElem.domCreated) {
                 domElem.domCreated = true;
                 domElem.createButton();
                 domElem.createiFrame(entries[currentFrontIndex].vLink);
                 domElem.createAnchor(entries[currentFrontIndex].rLink);
             }
+            break;
+        case ESCAPE:
+            if (domElem.domCreated) closeDom();
             break;
     }
 }
@@ -259,7 +285,7 @@ function manageRotation() {
 manageRotation.loopNum = 0;
 
 function mouseClicked() {
-    if (AboutBar.mouseOver()) {
+    if (AboutBar.mouseOver() && !domElem.domCreated) {
         AboutRect.showDom();
         frameCount = 0;
         AboutBar.barContentShown = true;

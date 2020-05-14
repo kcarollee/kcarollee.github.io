@@ -3,6 +3,7 @@ precision lowp float;
 #endif
 uniform vec2 resolution;
 uniform float time;
+uniform float piArr[2];
 float lightOrb(vec2 st, vec2 orbPos, float intensity){
 	return 0.01 / length(st - orbPos) * intensity;
 }

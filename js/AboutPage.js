@@ -12,7 +12,7 @@ class AboutPage {
 
         this.div = createDiv(' Currently majoring in Computer Science at University of Seoul(서울시립대).<br><br>' +
             ' A graphics hopeful creating sketches using openFrameworks, glsl, Processing, and p5.js.<br><br>' +
-            ' Currently on my learning backlog are: Touchdesigner, Unity, Three.js, openFrameworks with emscripten.');
+            ' Currently on my learning backlog are: Touchdesigner, Unity, Three.js, and openFrameworks with emscripten.');
         this.div.style('font-family', 'customTTF');
         this.div.style('font-size', 14 + 'px');
         this.div.position(10, windowHeight * 4 / 20);
