@@ -252,7 +252,7 @@ function main(){
 	requestAnimationFrame(render);
 
 	window.addEventListener('mousemove', onMouseMove, false);
-	window.addEventListener('mousedown', event =>{
+	window.addEventListener('click', event =>{
 		//console.log("HEY");
 		canvas.webkitRequestFullscreen();
 	});
