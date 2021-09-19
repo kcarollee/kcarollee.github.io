@@ -252,6 +252,10 @@ function main(){
 	requestAnimationFrame(render);
 
 	window.addEventListener('mousemove', onMouseMove, false);
+	window.addEventListener('mousedown', event =>{
+		//console.log("HEY");
+		canvas.webkitRequestFullscreen();
+	});
 }
 
 window.onload = main;
