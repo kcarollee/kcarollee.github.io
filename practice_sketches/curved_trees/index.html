@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r124/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
+    <script src="https://cdn.rawgit.com/mrdoob/stats.js/r17/build/stats.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.3.1/p5.min.js"></script>
+    <script src="perlin.js"></script>
+    <script id="vertex-shader" type="x-shader/x-vertex">
+      uniform float time;
+      varying vec2 vUv;
+      varying vec3 pos;
+      varying vec3 normalVec;
+      varying mat4 mv;
+      varying mat4 pm;
+      void main()
+      {
+          vUv = uv;
+          vec4 worldPos = projectionMatrix * modelViewMatrix * vec4(position,1.0); 
+          mv = modelViewMatrix;
+          pos = worldPos.xyz * 0.001;
+          normalVec = vec4(vec4(normal, 1.0)).xyz;
+          pm = projectionMatrix;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+      }
+
+  </script>
+
+  <script id="fragment-shader-1" type="x-shader/x-fragment">
+      precision highp float;
+      uniform float time;
+      uniform float alpha;
+      uniform vec2 resolution;
+      uniform vec3 cameraPos;
+      uniform float distanceFromCamera;
+      varying vec2 vUv;
+      varying vec3 pos;
+      varying vec3 normalVec;
+      varying mat4 mv;
+      varying mat4 pm;
+
+      float circle(vec2 uv, vec2 pos, float r){
+          return 1.0 - step(r, length(pos - uv));
+      }
+      void main(void)
+      {
+        vec2 uv = vUv ;
+        vec4 campos = vec4(cameraPos * 0.001, 1.0);
+        vec3 cpos = campos.xyz;
+        vec3 camDir = normalize(cpos - pos);
+        float d = max(.0, dot(camDir, normalVec));
+        gl_FragColor = vec4(vec3(distanceFromCamera), alpha);
+      }
+
+      
+
+
+  </script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <meta charset="utf-8" />
+
+  </head>
+  <body>
+    <p class="threeCanvas">
+    <script type="module" src="main.js"></script>
+    </p>
+    <p class="textwall" id="wall"></p>
+  </body>
+</html>
